@@ -63,7 +63,7 @@ class Bicycle(Vehicle):
         print(f"{self.make} {self.model} is pedaling smoothly.")
 
 
-car = Car("Ferrari", "911 Carrera", 2023, 2)
+car = Car("Porsche", "911 Carrera", 2023, 2)
 motorcycle = Motorcycle("Harley Davidson", "Sportster", 2023, 2)
 bicycle = Bicycle("Trek", "FX 3", 2023, 21)
 
