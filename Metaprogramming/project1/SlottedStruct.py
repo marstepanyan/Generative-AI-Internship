@@ -1,13 +1,8 @@
-class Struct(type):
+class SlottedStruct(type):
     def __new__(mcs, name, bases, namespace):
-        if "_dimension" in namespace:
-            dimension = namespace["_dimension"]
-
-            if not isinstance(dimension, int):
-                raise ValueError("Dimension should be integer for N-dimensional point.")
-
-            if dimension < 2:
-                raise ValueError("Dimension should be more than 2 for N-dimensional point.")
+        if '__slots__' in namespace:
+            cords = namespace['__slots__']
+            dimension = len(cords)
 
             def __init__(self, *args):
                 for arg in args:
@@ -16,18 +11,21 @@ class Struct(type):
 
                 if len(args) != dimension:
                     raise ValueError(f"Expected {dimension} coordinates, but got {len(args)}.")
-                self.cords = args
+
+                for i, cord in enumerate(cords):
+                    setattr(self, cord, args[i])
 
             def __eq__(self, other):
                 if not isinstance(other, self.__class__):
                     return False
-                return self.cords == other.cords
+                return all(getattr(self, cord) == getattr(other, cord) for cord in cords)
 
             def __hash__(self):
-                return hash(self.cords)
+                return hash((getattr(self, cord) for cord in cords))
 
             def __repr__(self):
-                return f"{self.__class__.__name__}{self.cords}"
+                cord_values = ', '.join(f"{cord}={getattr(self, cord)}" for cord in cords)
+                return f"{self.__class__.__name__}({cord_values})"
 
             namespace["__init__"] = __init__
             namespace["__eq__"] = __eq__
@@ -35,31 +33,31 @@ class Struct(type):
             namespace["__repr__"] = __repr__
 
         else:
-            raise ValueError(f"Your class {name} need dimension")
+            raise ValueError(f"Your class {name} needs a '__slots__' attribute")
 
         print(f"For {name=} {namespace=}")
 
         return super().__new__(mcs, name, bases, namespace)
 
 
-class Point2D(metaclass=Struct):
-    _dimension = 2
+class Point2D(metaclass=SlottedStruct):
+    __slots__ = ('x', 'y')
 
 
-class Point3D(metaclass=Struct):
-    _dimension = 3
+class Point3D(metaclass=SlottedStruct):
+    __slots__ = ('x', 'y', 'z')
 
 
-class Point4D(metaclass=Struct):
-    _dimension = 4
+class Point4D(metaclass=SlottedStruct):
+    __slots__ = ('x', 'y', 'z', 'm')
 
 
-class Point5D(metaclass=Struct):
-    _dimension = 5
+class Point5D(metaclass=SlottedStruct):
+    __slots__ = ('x', 'y', 'z', 'm', 'n')
 
 
 try:
-    class Point6D(metaclass=Struct):
+    class Point6D(metaclass=SlottedStruct):
         pass
 except ValueError as e:
     print(e)
