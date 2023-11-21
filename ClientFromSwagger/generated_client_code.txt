@@ -1,0 +1,32 @@
+Here is a Python class that handles API calls based on the provided Swagger JSON:
+
+```python
+import requests
+
+class APIClient:
+    def __init__(self, api_key):
+        self.base_url = 'custom url'
+        self.headers = {'x-app-authorization': api_key}
+
+    def health_check(self):
+        url = self.base_url + '/gw1/whisper/v1/health'
+        response = requests.get(url, headers=self.headers)
+        return response.json()
+
+    def post_whisper_task(self, audio_url, whisper_model, language):
+        url = self.base_url + '/gw1/whisper/v1/whisper-task'
+        data = {
+            'audio_url': audio_url,
+            'whisper_model': whisper_model,
+            'language': language
+        }
+        response = requests.post(url, headers=self.headers, json=data)
+        return response.json()
+
+    def get_whisper_output(self, transaction_id):
+        url = self.base_url + '/gw1/whisper/v1/whisper-output/' + transaction_id
+        response = requests.get(url, headers=self.headers)
+        return response.json()
+```
+
+In this class, the `__init__` function initializes the base URL and headers with the provided values. The `health_check` method sends a GET request to the health endpoint. The `post_whisper_task` method sends a POST request to the whisper-task endpoint with the provided parameters. The `get_whisper_output` method sends a GET request to the whisper-output endpoint with the provided transaction ID.
