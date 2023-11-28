@@ -1,1 +1,20 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swagger to Python Class Generator</title>
+</head>
+<body>
+    <h1>Swagger to Python Class Generator</h1>
+    <form method="post">
+        <label for="link">Enter Swagger Link:</label>
+        <input type="text" id="link" name="link" required>
+        <button type="submit">Generate Python Class</button>
+    </form>
+    {% if python_class %}
+        <h2>Generated Python Class:</h2>
+        <pre>{{ python_class }}</pre>
+    {% endif %}
+</body>
+</html>
