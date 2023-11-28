@@ -4,38 +4,36 @@ import re
 import json
 from urllib.parse import urljoin
 
-url = 'https://ai.picsart.com/whisper/swagger#/'
 
-# Send an HTTP request to the URL
-response = requests.get(url)
+# url = 'https://ai.picsart.com/whisper/swagger#/'
 
-# Check if the request was successful (status code 200)
-if response.status_code == 200:
-    # Parse the HTML content of the page
-    soup = BeautifulSoup(response.text, 'html.parser')
+def get_json(url):
+    response = requests.get(url)
 
-    json_url_match = re.search(r"url:\s+'([^']+/openapi\.json)'", response.text)
+    if response.status_code == 200:
+        # Parse the HTML content of the page
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-    if json_url_match:
-        json_url = json_url_match.group(1)
+        json_url_match = re.search(r"url:\s+'([^']+/openapi\.json)'", response.text)
 
-        absolute_json_url = urljoin(url, json_url)
+        if json_url_match:
+            json_url = json_url_match.group(1)
 
-        # Send a new request to the JSON URL to get the JSON content
-        json_response = requests.get(absolute_json_url)
+            absolute_json_url = urljoin(url, json_url)
 
-        # Check if the request to the JSON URL was successful
-        if json_response.status_code == 200:
-            # Parse the JSON content
-            parsed_json = json.loads(json_response.text)
+            # Send a new request to the JSON URL to get the JSON content
+            json_response = requests.get(absolute_json_url)
 
-            # print(parsed_json)
+            if json_response.status_code == 200:
+                # Parse the JSON content
+                parsed_json = json.loads(json_response.text)
+                return parsed_json
+
+            else:
+                return f"Failed to retrieve JSON content. Status code: {json_response.status_code}"
 
         else:
-            print(f"Failed to retrieve JSON content. Status code: {json_response.status_code}")
+            return "JSON URL not found in the page."
 
     else:
-        print("JSON URL not found in the page.")
-
-else:
-    print(f"Failed to retrieve the web page. Status code: {response.status_code}")
+        return f"Failed to retrieve the web page. Status code: {response.status_code}"
